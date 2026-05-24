@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'xmlast'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.13.2'
+    implementation 'org.antlr:antlr4-runtime:4.13.2'
+}
+
+tasks.named('xmlast', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
+    sourceDirectory.set(layout.projectDirectory.dir('src/test/resources/benchmark'))
+    destinationDirectory.set(layout.buildDirectory.dir('xmlast-samples'))
+
+    parserClassName.set('name.jurgenei.parsers.PlSqlParser')
+    lexerClassName.set('name.jurgenei.parsers.PlSqlLexer')
+    startRule.set('sqlScript')
+
+    includes.set(['**/*.sql'])
+    targetExtension.set('.xml')
+
+    // Add compiled generated classes and runtime libs.
+    runtimeClasspath.from(configurations.runtimeClasspath, files("$buildDir/classes/java/antlr"))
+}
+

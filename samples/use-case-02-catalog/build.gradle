@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'xmlast'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.13.2'
+    implementation 'org.antlr:antlr4-runtime:4.13.2'
+}
+
+tasks.named('xmlast', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
+    sourceDirectory.set(layout.projectDirectory.dir('src/test/resources/benchmark'))
+    destinationDirectory.set(layout.buildDirectory.dir('xmlast-samples'))
+
+    catalogFile.set(layout.projectDirectory.file('samples/use-case-02-catalog/catalog.xml'))
+    catalogGrammar.set('plsql')
+
+    // Optional override. If omitted, parser/lexer values from catalog are used.
+    parserClassName.set('name.jurgenei.parsers.PlSqlParser')
+    lexerClassName.set('name.jurgenei.parsers.PlSqlLexer')
+
+    includes.set(['**/*.sql'])
+    targetExtension.set('.xml')
+    runtimeClasspath.from(configurations.runtimeClasspath, files("$buildDir/classes/java/antlr"))
+}
+
