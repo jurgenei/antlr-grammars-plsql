@@ -1,1 +1,0 @@
-/Users/cs79en/Developer/GitHub/antlr-grammars-plsql/src/test/resources/benchmark/004_portfolio_reports_customer_data.sql
