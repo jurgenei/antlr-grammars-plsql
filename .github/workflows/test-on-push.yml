@@ -1,0 +1,49 @@
+name: Test on Push
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Ensure local plugin repositories are available
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT_PARENT="$(dirname "$GITHUB_WORKSPACE")"
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+
+          if [ ! -d "$ROOT_PARENT/gradle-antlr-plugin/.git" ]; then
+            git clone --depth 1 "https://github.com/$OWNER/gradle-antlr-plugin.git" "$ROOT_PARENT/gradle-antlr-plugin"
+          fi
+
+          if [ ! -d "$ROOT_PARENT/gradle-antlr-parse-plugin/.git" ]; then
+            git clone --depth 1 "https://github.com/$OWNER/gradle-antlr-parse-plugin.git" "$ROOT_PARENT/gradle-antlr-parse-plugin"
+          fi
+
+      - name: Build gradle-antlr-parse-plugin when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT_PARENT="$(dirname "$GITHUB_WORKSPACE")"
+
+          if [ -d "$ROOT_PARENT/gradle-antlr-parse-plugin" ]; then
+            chmod +x "$ROOT_PARENT/gradle-antlr-parse-plugin/gradlew"
+            "$ROOT_PARENT/gradle-antlr-parse-plugin/gradlew" -p "$ROOT_PARENT/gradle-antlr-parse-plugin" --no-daemon clean build
+          fi
+
+      - name: Run tests
+        run: ./gradlew --no-daemon :test
+

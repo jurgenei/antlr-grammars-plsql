@@ -1,5 +1,11 @@
 # antlr-grammars-plsql
 
+[![Test on Push](https://github.com/jurgenei/antlr-grammars-plsql/actions/workflows/test-on-push.yml/badge.svg)](https://github.com/jurgenei/antlr-grammars-plsql/actions/workflows/test-on-push.yml)
+![Java](https://img.shields.io/badge/Java-21%2B-007396?logo=openjdk&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-8%2B-02303A?logo=gradle&logoColor=white)
+![ANTLR](https://img.shields.io/badge/ANTLR-4.13.x-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 PL/SQL grammar module extracted from `gradle-antlr-xml-plugin`.
 
 This repository hosts PL/SQL ANTLR grammars and validates them against SQL sample corpora through dynamic parser loading tests and XML AST conversion tasks.
