@@ -132,9 +132,12 @@ def configureXmlAstTask = { name.jurgenei.gradle.antlr.XmlAstGradleTask t, Strin
 }
 
 tasks.named('xmlast', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
-    // Keep plugin default task as a compatibility alias for benchmark inputs.
-    configureXmlAstTask(delegate, 'src/test/resources/benchmark', 'benchmark',
-            'Parses PL/SQL benchmark samples to XML AST for grammar validation.')
+    // Keep plugin default task name as a compatibility alias, but delegate work
+    // to the explicit sample-set tasks below.
+    dependsOn tasks.named('xml-ast-antlr-issue')
+    dependsOn tasks.named('xml-ast-benchmark')
+    dependsOn tasks.named('xml-ast-plsql')
+    onlyIf { false }
 }
 
 tasks.register('xml-ast-antlr-issue', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
@@ -154,5 +157,6 @@ tasks.register('xml-ast-plsql', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
 
 
 tasks.named('check') {
-    // Skip xmlast for now - focus is on the refactored dynamic class loading test
+    // Run XML AST validation in CI via the xmlast wrapper task.
+    dependsOn tasks.named('xmlast')
 }
