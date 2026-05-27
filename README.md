@@ -22,6 +22,22 @@ This repository hosts PL/SQL ANTLR grammars and validates them against SQL sampl
   - `src/test/resources/antlr-issue-unresolved` (known failing samples, tracked but excluded from CI checks)
 - dynamic-loading parser test: `src/test/java/name/jurgenei/parsers/PlSqlLexerParserTest.java`
 
+## Latest Insights (May 2026)
+
+- XML AST conversion now supports bounded execution profiles via `executionModel` + `parallelism`
+  - `SEQUENTIAL`
+  - `PLATFORM_THREADS`
+  - `VIRTUAL_THREADS`
+- per-file DFA clearing is automatic on both success and failure paths to keep memory bounded for large batches
+- conversion output includes per-file duration metadata (`<file> <duration>s <lines>:<bytes> parsed`)
+- end-of-run summary reports operational quality and performance signals:
+  - files processed / files with errors / success percentage
+  - estimated sequential time
+  - total processing time
+  - average time per file
+  - execution profile with speedup factor
+- fail-fast validation is enforced for invalid task inputs (for example blank `startRule`, invalid `executionModel`, non-positive `parallelism`)
+
 ## Build model
 
 This project uses:
