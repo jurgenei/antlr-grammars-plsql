@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'antlr'
     id 'xmlast'
+    id 'maven-publish'
+    id 'signing'
 }
 
 group = 'name.jurgenei.grammars'
@@ -11,6 +13,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+    withSourcesJar()
 }
 
 repositories {
@@ -24,7 +27,53 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 }
 
-// ... existing code ...
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'ANTLR4 Grammar - PL/SQL'
+                description = 'PL/SQL ANTLR grammar module'
+                url = 'https://github.com/jurgenei/antlr-grammars-plsql'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'jurgenei'
+                        name = 'Jurgen Hildebrand'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/jurgenei/antlr-grammars-plsql.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/jurgenei/antlr-grammars-plsql.git'
+                    url = 'https://github.com/jurgenei/antlr-grammars-plsql'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("publish") }
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    if (signingKey && signingPassword) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.mavenJava
+    }
+}
 
 def grammarDir = file('src/main/antlr/name/jurgenei/parsers')
 def antlrOutputDir = file("generated-src/antlr/main")
@@ -155,7 +204,15 @@ tasks.register('xml-ast-plsql', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
             'Parses plsql SQL samples to XML AST for grammar validation.')
 }
 
+tasks.register('xml-ast-examples', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
+    configureXmlAstTask(delegate, 'src/test/resources/examples', 'plsql',
+            'Parses plsql SQL samples to XML AST for grammar validation.')
+}
 
+tasks.register('xml-ast-more-examples', name.jurgenei.gradle.antlr.XmlAstGradleTask) {
+    configureXmlAstTask(delegate, 'src/test/resources/more-examples', 'plsql',
+            'Parses plsql SQL samples to XML AST for grammar validation.')
+}
 tasks.named('check') {
     // Run XML AST validation in CI via the xmlast wrapper task.
     dependsOn tasks.named('xmlast')
