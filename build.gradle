@@ -357,7 +357,10 @@ tasks.register('realast', name.jurgenei.gradle.antlr.XmlAstGradleTask) { it ->
             'Parses benchmark SQL samples parallel.')
     it.executionModel.set('VIRTUAL_THREADS')
     it.parallelism.set(3)  // Up to 100 concurrent tasks
-    it.includes.set(['oracle/dsa/procedures/*.sql'])
-    it.outputs.upToDateWhen { false }
+    it.includes.set(['**/*.sql'])
+    it.continueOnError.set(true)
+    it.failOnError.set(false)
+    it.failOnTransformationError.set(false)
+    it.force.set(false)
     // it.enableDFAMonitoring.set(true)
 }
